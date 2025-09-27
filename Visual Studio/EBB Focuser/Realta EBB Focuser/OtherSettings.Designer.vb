@@ -91,7 +91,7 @@ Partial Class OtherSettings
         'NoSteps
         '
         Me.NoSteps.FormattingEnabled = True
-        Me.NoSteps.Items.AddRange(New Object() {"8", "16", "32", "64", "128", "256"})
+        Me.NoSteps.Items.AddRange(New Object() {"0", "2", "4", "8", "16", "32", "64", "128", "256"})
         Me.NoSteps.Location = New System.Drawing.Point(45, 93)
         Me.NoSteps.Margin = New System.Windows.Forms.Padding(2)
         Me.NoSteps.Name = "NoSteps"
@@ -111,7 +111,7 @@ Partial Class OtherSettings
         '
         Me.CurrentBox.Location = New System.Drawing.Point(45, 24)
         Me.CurrentBox.Margin = New System.Windows.Forms.Padding(2)
-        Me.CurrentBox.Maximum = New Decimal(New Integer() {1200, 0, 0, 0})
+        Me.CurrentBox.Maximum = New Decimal(New Integer() {2000, 0, 0, 0})
         Me.CurrentBox.Name = "CurrentBox"
         Me.CurrentBox.Size = New System.Drawing.Size(90, 20)
         Me.CurrentBox.TabIndex = 20
