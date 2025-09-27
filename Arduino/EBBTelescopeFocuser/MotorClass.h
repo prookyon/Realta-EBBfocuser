@@ -1,5 +1,6 @@
-#include <EEPROM.h>;
+#include <EEPROM.h>
 #include <TMCStepper.h>
+#include "EEPROM_locations.h"
 
 #define D_STEP_PIN PD0
 #define D_UART_PIN PA15
@@ -13,17 +14,18 @@ class Motor: public TMC2209Stepper
       Motor(Stream * SerialPort, float RS, uint8_t addr);
       void Halt();
       void SetMoveTarget(long Position);
-      boolean Move();
+      bool Move();
       void setHeaterPWM(byte HeaterValue);
-      void engageMotor(boolean Engage);
+      void engageMotor(bool Engage);
       byte CurrentHeaterValue;
-      boolean IsMoving;
-      boolean IsEngaged;
+      bool IsMoving;
+      bool IsEngaged;
       long CurrentPosition;
       long MoveTarget;
-      boolean move_direction;
+      bool move_direction;
       int current;
       int steps;
+	  long PulseLength;
 };
 
 Motor::Motor(Stream * SerialPort, float RS, uint8_t addr): TMC2209Stepper(SerialPort,  RS, addr) 
@@ -35,7 +37,7 @@ Motor::Motor(Stream * SerialPort, float RS, uint8_t addr): TMC2209Stepper(Serial
 void Motor::Halt()
 {
      IsMoving = false;
-     EEPROM.put(1, CurrentPosition);
+     EEPROM.put(EEPROM_OFFSET_POSITION, CurrentPosition);
 }
 
 void Motor::SetMoveTarget(long Position)
@@ -47,10 +49,10 @@ void Motor::SetMoveTarget(long Position)
   }
 }
 
-boolean Motor::Move()
+bool Motor::Move()
 {
           long difference;
-          boolean new_direction;
+          bool new_direction;
           difference = MoveTarget - CurrentPosition;
 
           if(!IsEngaged)
@@ -83,9 +85,9 @@ boolean Motor::Move()
             }
             
             digitalWrite(D_STEP_PIN, HIGH); // Raise voltage on this pin to VCC or 3.3v
-            delayMicroseconds(120); // wait
+            delayMicroseconds(PulseLength); // wait
             digitalWrite(D_STEP_PIN, LOW);
-            delayMicroseconds(120); // wait
+            delayMicroseconds(PulseLength); // wait
 
             return true;
             
@@ -98,7 +100,7 @@ void Motor::setHeaterPWM(byte HeaterValue)
   CurrentHeaterValue = HeaterValue;
 }
 
-void Motor::engageMotor(boolean Engage)
+void Motor::engageMotor(bool Engage)
 {
   IsEngaged = Engage;
   if(Engage)
