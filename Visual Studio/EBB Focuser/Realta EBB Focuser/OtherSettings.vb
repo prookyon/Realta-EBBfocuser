@@ -5,6 +5,7 @@
     Dim vHeater As String
     Dim vEngaged As Boolean
     Dim vMotorPosition As String
+    Dim vPulseLen As String
 
 
     Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
@@ -18,6 +19,12 @@
             If CurrentBox.Value.ToString <> vCurrent Then
                 'MsgBox("Current changed")
                 Focuser.objSerial.Transmit("G6" + " " + CurrentBox.Value.ToString + "#")
+                Threading.Thread.Sleep(200)
+            End If
+
+            If PulseLen.Value.ToString <> vPulseLen Then
+                'MsgBox("Pulse length changed")
+                Focuser.objSerial.Transmit("G15" + " " + PulseLen.Value.ToString + "#")
                 Threading.Thread.Sleep(200)
             End If
 
@@ -79,6 +86,15 @@
         CurrentBox.Enabled = True
         vCurrent = s
         CurrentBox.Value = vCurrent
+
+        Focuser.objSerial.Transmit("G16" + "#" + vbCrLf)
+        Threading.Thread.Sleep(200)
+
+        s = Focuser.objSerial.ReceiveTerminated("#")
+        s = s.Replace("#", "")
+        PulseLen.Enabled = True
+        vPulseLen = s
+        PulseLen.Value = vPulseLen
 
         Focuser.objSerial.Transmit("G4" + "#" + vbCrLf)
         Threading.Thread.Sleep(200)

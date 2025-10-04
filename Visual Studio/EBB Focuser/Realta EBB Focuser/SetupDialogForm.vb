@@ -11,6 +11,7 @@ Public Class SetupDialogForm
     Dim vHeater As String
     Dim vEngaged As Boolean
     Dim vMotorPosition As String
+    Dim vPulseLen As String
 
     Private Sub OK_Button_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OK_Button.Click ' OK button event handler
         ' Persist new values of user settings to the ASCOM profile
@@ -30,6 +31,12 @@ Public Class SetupDialogForm
             If CurrentBox.Value.ToString <> vCurrent Then
                 'MsgBox("Current changed")
                 Focuser.objSerial.Transmit("G6" + " " + CurrentBox.Value.ToString + "#")
+                Threading.Thread.Sleep(200)
+            End If
+
+            If PulseLen.Value.ToString <> vPulseLen Then
+                'MsgBox("Pulse length changed")
+                Focuser.objSerial.Transmit("G15" + " " + PulseLen.Value.ToString + "#")
                 Threading.Thread.Sleep(200)
             End If
 
@@ -119,6 +126,15 @@ Public Class SetupDialogForm
             CurrentBox.Enabled = True
             vCurrent = s
             CurrentBox.Value = vCurrent
+
+            Focuser.objSerial.Transmit("G16" + "#" + vbCrLf)
+            Threading.Thread.Sleep(200)
+
+            s = Focuser.objSerial.ReceiveTerminated("#")
+            s = s.Replace("#", "")
+            PulseLen.Enabled = True
+            vPulseLen = s
+            PulseLen.Value = vPulseLen
 
             Focuser.objSerial.Transmit("G4" + "#" + vbCrLf)
             Threading.Thread.Sleep(200)
