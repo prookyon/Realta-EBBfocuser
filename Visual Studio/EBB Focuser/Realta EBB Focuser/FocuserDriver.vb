@@ -496,8 +496,19 @@ Public Class Focuser
     ''' </summary>
     Public ReadOnly Property Temperature() As Double Implements IFocuserV3.Temperature
         Get
-            TL.LogMessage("Temperature Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("Temperature", False)
+            While isBusy = True
+                Threading.Thread.Sleep(200)
+            End While
+
+            isBusy = True
+            Focuser.objSerial.Transmit("G17" + "#" + vbCrLf)
+            Threading.Thread.Sleep(200)
+
+            Dim s As String
+            s = Focuser.objSerial.ReceiveTerminated("#")
+            s = s.Replace("#", "")
+            isBusy = False
+            Return Double.Parse(s, CultureInfo.InvariantCulture)
         End Get
     End Property
 
